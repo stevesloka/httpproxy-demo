@@ -1,0 +1,20 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: containersteve-tls-wild
+  namespace: root-proxies
+spec:
+  acme:
+    config:
+    - dns01:
+        provider: route53
+      domains:
+      - '*.demo.projectcontour.io'
+      - demo.projectcontour.io
+  commonName: '*.demo.projectcontour.io'
+  dnsNames:
+  - demo.projectcontour.io
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod-dns
+  secretName: demoprojectcontourio-tls-wild

@@ -2,20 +2,30 @@ apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
   name: root
+  namespace: root-proxies
 spec:
   virtualhost:
-    fqdn: kind.local
-  includes:
-  - name: blogsite
-    namespace: teama
-    conditions:
-    - prefix: /blog
-    - header:
-        name: x-header
-        exact: abc
+    fqdn: demo.projectcontour.io
+    tls:
+      secretName: demoprojectcontourio-tls-wild
   routes:
   - services:
-    - name: app
+    - name: rootapp
       port: 80
     conditions:
       - prefix: /
+
+
+
+
+
+
+
+  # includes:
+  # - name: blogsite
+  #   namespace: marketing
+  #   conditions:
+  #   - prefix: /blog
+  #   - header:
+  #       name: x-header
+  #       exact: abc

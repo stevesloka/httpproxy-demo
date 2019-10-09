@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: info
-  namespace: teama
+  namespace: marketing
 spec:
   replicas: 1
   template:
@@ -27,7 +27,7 @@ metadata:
   labels:
     app: info
   name: info
-  namespace: teama
+  namespace: marketing
 spec:
   ports:
   - port: 80
