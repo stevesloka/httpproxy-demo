@@ -21,6 +21,31 @@ spec:
 
 
 
+
+
+  # - services:
+  #   - name: secureapp
+  #     port: 80
+  #   conditions:
+  #     - prefix: /secure
+  #     - header:
+  #         name: User-Agent
+  #         notcontains: Firefox
+  #     - header:
+  #         name: User-Agent
+  #         notcontains: Chrome
+    
+    
+
+
+
+
+
+
+  #         name: User-Agent
+  #         notcontains: Chrome
+
+
   # includes:
   # - name: blogsite
   #   namespace: marketing

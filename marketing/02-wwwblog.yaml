@@ -5,6 +5,9 @@ metadata:
   namespace: marketing
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: wwwblog
   template:
     metadata:
       labels:
