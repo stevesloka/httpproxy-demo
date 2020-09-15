@@ -1,20 +1,19 @@
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: containersteve-tls-wild
-  namespace: root-proxies
+  name: steveslokadev-tls
+  namespace: projectcontour-roots
 spec:
-  acme:
-    config:
-    - dns01:
-        provider: route53
-      domains:
-      - '*.demo.projectcontour.io'
-      - demo.projectcontour.io
-  commonName: '*.demo.projectcontour.io'
+  # acme:
+  #   config:
+  #   - dns01:
+  #       provider: route53
+  #     domains:
+  #     - '*.demo.projectcontour.io'
+  #     - demo.projectcontour.io
+  commonName: stevesloka.dev
   dnsNames:
-  - demo.projectcontour.io
+  - stevesloka.dev
   issuerRef:
-    kind: ClusterIssuer
     name: letsencrypt-prod-dns
-  secretName: demoprojectcontourio-tls-wild
+  secretName: steveslokadev-tls

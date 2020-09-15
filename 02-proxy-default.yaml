@@ -1,19 +1,25 @@
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
-  name: root
+  name: root-containersteve
   namespace: root-proxies
 spec:
   virtualhost:
-    fqdn: demo.projectcontour.io
-    tls:
-      secretName: demoprojectcontourio-tls-wild
+    fqdn: local.projectcontour.io
+  includes:
+  - name: blogsite
+    namespace: marketing
+    conditions:
+    - prefix: /blog
+    - header:
+        name: User-Agent
+        contains: Firefox
   routes:
   - services:
-    - name: rootapp
+    - name: rootapp3
       port: 80
     conditions:
-      - prefix: /
+    - prefix: /
 
 
 

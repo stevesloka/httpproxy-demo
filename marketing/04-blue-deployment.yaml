@@ -15,10 +15,10 @@ spec:
     spec:
       containers:
       - name: echo
-        image: stevesloka/echo-server
-        command: ["echo-server"]
+        image: hashicorp/http-echo
         args:
-          - --echotext=This is the BLUE site!
+          - -text=This is the BLUE site!
+          - -listen=:8080
         imagePullPolicy: IfNotPresent
         ports:
           - name: http
