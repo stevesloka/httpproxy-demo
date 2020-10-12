@@ -6,27 +6,23 @@ metadata:
 spec:
   virtualhost:
     fqdn: local.projectcontour.io
-  includes:
-  - name: blogsite
-    namespace: marketing
-    conditions:
-    - prefix: /blog
-    - header:
-        name: User-Agent
-        contains: Firefox
   routes:
   - services:
-    - name: rootapp3
+    - name: rootapp
       port: 80
     conditions:
     - prefix: /
 
 
 
-
-
-
-
+    # includes:
+    #   - name: blogsite
+    #     namespace: marketing
+    #     conditions:
+    #     - prefix: /blog
+    #     - header:
+    #         name: User-Agent
+    #         contains: Firefox
 
 
   # - services:
@@ -41,7 +37,10 @@ spec:
   #         name: User-Agent
   #         notcontains: Chrome
     
-    
+  # authorization:
+  #   extensionRef:
+  #     name: htpasswd
+  #     namespace: root-proxies
 
 
 

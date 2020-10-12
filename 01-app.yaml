@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rootapp3
+  name: rootapp
   namespace: root-proxies
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rootapp3
+      app: rootapp
   template:
     metadata:
       labels:
-        app: rootapp3
+        app: rootapp
     spec:
       containers:
       - name: echo
         image: stevesloka/echo-server
         command: ["echo-server"]
         args:
-          - --echotext=This is the default app site [rootapp3]!
+          - --echotext=This is the default app site [rootapp]!
         imagePullPolicy: IfNotPresent
         ports:
           - name: http
@@ -28,8 +28,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: rootapp3
-  name: rootapp3
+    app: rootapp
+  name: rootapp
   namespace: root-proxies
 spec:
   ports:
@@ -37,7 +37,7 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: rootapp3
+    app: rootapp
   type: ClusterIP
 ---
 apiVersion: apps/v1

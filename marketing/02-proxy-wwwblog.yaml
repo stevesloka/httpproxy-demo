@@ -5,20 +5,11 @@ metadata:
   name: blogsite
   namespace: marketing
 spec:
-  includes:
-    - name: site
-      conditions:
-      - prefix: /blog
   routes:
   - services:
-    - name: blue 
+    - name: wwwblog 
       port: 80
-      weight: 0
-    - name: green 
-      port: 80 
-      weight: 90
-  
-
+ 
 
 
 
