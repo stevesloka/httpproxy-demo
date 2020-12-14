@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: htpasswd
   name: htpasswd
-  namespace: root-proxies
+  namespace: projectcontour-auth
 spec:
   ports:
   - name: auth
@@ -22,7 +22,7 @@ metadata:
   labels:
     app.kubernetes.io/name: htpasswd
   name: htpasswd
-  namespace: root-proxies
+  namespace: projectcontour-auth
 spec:
   replicas: 1
   selector:

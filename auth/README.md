@@ -18,5 +18,5 @@ spec:
 ```
 
 ```bash
-curl -k --user user1:password1 https://local.projectcontour.io/secure
+curl -i -k --user user1:password1 https://local.projectcontour.io
 ```

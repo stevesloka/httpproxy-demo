@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1alpha3
 kind: Certificate
 metadata:
   name: htpasswd
-  namespace: root-proxies
+  namespace: projectcontour-auth
 spec:
   dnsNames:
   - htpasswd

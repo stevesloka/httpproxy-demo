@@ -9,7 +9,8 @@ spec:
   - services:
     - name: wwwblog 
       port: 80
- 
+    conditions:
+    - prefix: /  # /blog
 
 
 

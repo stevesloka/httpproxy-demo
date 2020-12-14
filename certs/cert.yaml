@@ -1,19 +1,13 @@
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: steveslokadev-tls
-  namespace: projectcontour-roots
+  namespace: root-proxies
 spec:
-  # acme:
-  #   config:
-  #   - dns01:
-  #       provider: route53
-  #     domains:
-  #     - '*.demo.projectcontour.io'
-  #     - demo.projectcontour.io
   commonName: stevesloka.dev
   dnsNames:
   - stevesloka.dev
   issuerRef:
     name: letsencrypt-prod-dns
+    kind: ClusterIssuer
   secretName: steveslokadev-tls
