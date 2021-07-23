@@ -1,13 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: steveslokadev-tls
-  namespace: root-proxies
+  name: containerstevecom-tls
 spec:
-  commonName: stevesloka.dev
+  commonName: containersteve.com
   dnsNames:
-  - stevesloka.dev
+  - containersteve.com
+  - www.containersteve.com
   issuerRef:
     name: letsencrypt-prod-dns
     kind: ClusterIssuer
-  secretName: steveslokadev-tls
+  secretName: containerstevecom-secret

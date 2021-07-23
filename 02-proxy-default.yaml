@@ -10,7 +10,7 @@ spec:
       secretName: steveslokadev-tls
   routes:
   - services:
-    - name: rootapp
+    - name: service1
       port: 80
     conditions:
     - prefix: /

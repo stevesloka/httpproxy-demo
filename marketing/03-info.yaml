@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: echo
-        image: stevesloka/echo-server
+        image: stevesloka/echo-server:v0.2.0
         command: ["echo-server"]
         args:
           - --echotext=This is the INFO site!

@@ -8,4 +8,4 @@ spec:
   routes:
   - services:
     - name: info
-      port: 80   # /blog/info
+      port: 80 
