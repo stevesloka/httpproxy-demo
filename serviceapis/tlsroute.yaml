@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: projectcontour-roots
+---
+apiVersion: cert-manager.io/v1alpha3
+kind: ClusterIssuer
+metadata:
+  name: selfsigned
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha3
+kind: Certificate
+metadata:
+  name: tlscert
+  namespace: projectcontour-roots
+spec:
+  dnsNames:
+  - rootapp
+  secretName: tlscert
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1alpha3
+kind: Certificate
+metadata:
+  name: tlscert
+  namespace: projectcontour
+spec:
+  dnsNames:
+  - rootapp
+  secretName: tlscert
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rootapp
+  namespace: projectcontour-roots
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rootapp
+  template:
+    metadata:
+      labels:
+        app: rootapp
+    spec:
+      containers:
+      - name: echo
+        image: stevesloka/echo-server
+        command: ["echo-server"]
+        args:
+          - --echotext=This is the default app site [rootapp]!
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rootapp
+  name: rootapp
+  namespace: projectcontour-roots
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: rootapp
+  type: ClusterIP
+---
+kind: GatewayClass
+apiVersion: networking.x-k8s.io/v1alpha1
+metadata:
+  name: contour-class
+spec: 
+  controller: projectcontour.io/ingress-controller
+---
+kind: Gateway
+apiVersion: networking.x-k8s.io/v1alpha1
+metadata:
+  name: contour
+  namespace: projectcontour
+spec:
+  gatewayClassName: contour-class
+  listeners:
+    - protocol: TLS
+      port: 443
+      tls:
+        certificateRef:
+          kind: Secret
+          group: core
+          name: tlscert
+      routes:
+        kind: TLSRoute
+        selector:
+          matchLabels:
+            app: filter
+        namespaces:
+          from: "All"
+---
+apiVersion: networking.x-k8s.io/v1alpha1
+kind: TLSRoute
+metadata:
+  name: http-filter-1
+  namespace: projectcontour-roots
+  labels:
+    app: filter
+spec:
+  gateways:
+    allow: "All"
+  rules:
+  - matches:
+    - snis:
+      - local.projectcontour.io
+    forwardTo:
+    - serviceName: rootapp
+      port: 80

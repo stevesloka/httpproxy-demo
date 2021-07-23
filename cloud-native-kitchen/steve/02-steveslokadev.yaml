@@ -1,0 +1,55 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: root
+  namespace: steveslokadev-root
+spec:
+  virtualhost:
+    fqdn: stevesloka.dev
+    tls: 
+      secretName: steveslokadev-tls
+  routes:
+  - services:
+    - name: steveblog
+      port: 443
+      protocol: tls
+    conditions:
+    - prefix: /
+    requestHeadersPolicy:
+      set:
+      - name: Host
+        value: stevesloka.com
+
+
+
+
+
+#  - services:
+#     - name: steveabout
+#       port: 80
+#     conditions:
+#     - prefix: /
+
+
+  # - services:
+  #   - name: steveblog
+  #     port: 443
+  #     protocol: tls
+  #   conditions:
+  #   - prefix: /
+  #   requestHeadersPolicy:
+  #     set:
+  #     - name: Host
+  #       value: stevesloka.com
+
+
+    # - services:
+    # - name: contourarch
+    #   port: 443
+    #   protocol: tls
+    # conditions:
+    # - prefix: /docs/v1.10.0/img/archoverview.png
+    # requestHeadersPolicy:
+    #   set:
+    #   - name: Host
+    #     value: projectcontour.io

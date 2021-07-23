@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: steveabout
+  namespace:  steveslokadev-root
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: steveabout
+  template:
+    metadata:
+      labels:
+        app: steveabout
+    spec:
+      containers:
+      - name: echo
+        image: hashicorp/http-echo
+        args:
+          - -text="Hi! I'm Steve Sloka!"
+          - -listen=:8080
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: steveabout
+  name: steveabout
+  namespace: steveslokadev-root
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: steveabout
+  type: ClusterIP

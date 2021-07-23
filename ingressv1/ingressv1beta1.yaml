@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingressv1beta1
+  namespace: projectcontour-roots
+spec:
+  rules:
+  - host: local.projectcontour.io
+    http:
+      paths:
+      - backend:
+          serviceName: rootapp
+          servicePort: 80

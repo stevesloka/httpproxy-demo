@@ -1,0 +1,19 @@
+kind: HTTPRoute
+apiVersion: networking.x-k8s.io/v1alpha1
+metadata:
+  name: marketing
+  namespace: marketing
+spec:
+  gateways:
+    allow: All
+  hostnames:
+    - local.projectcontour.io
+  rules:
+    - matches:
+      - path:
+          type: Prefix
+          value: /blog
+      forwardTo:
+      - serviceName: wwwblog
+        port: 80
+    

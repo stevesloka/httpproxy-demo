@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contourarch
+  namespace: steveslokadev-root
+spec:
+  type: ExternalName
+  externalName: projectcontour.io
+  ports:
+  - name: http
+    port: 443

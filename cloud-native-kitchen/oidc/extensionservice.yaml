@@ -1,0 +1,11 @@
+---
+apiVersion: projectcontour.io/v1alpha1
+kind: ExtensionService
+metadata:
+  name: auth
+  namespace: projectcontour-auth
+spec:
+  protocol: h2
+  services:
+    - name: authserver
+      port: 10003

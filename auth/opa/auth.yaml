@@ -1,0 +1,202 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policy
+  namespace: projectcontour-auth
+data:
+  policy.rego: |
+    package envoy.authz
+
+    import input.attributes.request.http as http_request
+
+    default allow = true
+
+    token = {"valid": valid, "payload": payload} {
+        [_, encoded] := split(http_request.headers.authorization, " ")
+        [valid, _, payload] := io.jwt.decode_verify(encoded, {"secret": "secret"})
+    }
+
+    allow {
+        is_token_valid
+        action_allowed
+    }
+
+    is_token_valid {
+      token.valid
+      now := time.now_ns() / 1000000000
+      token.payload.nbf <= now
+      now < token.payload.exp
+    }
+
+    action_allowed {
+      http_request.method == "GET"
+      token.payload.role == "guest"
+      glob.match("/people*", [], http_request.path)
+    }
+
+    action_allowed {
+      http_request.method == "GET"
+      token.payload.role == "admin"
+      glob.match("/people*", [], http_request.path)
+    }
+
+    action_allowed {
+      http_request.method == "POST"
+      token.payload.role == "admin"
+      glob.match("/people", [], http_request.path)
+      lower(input.parsed_body.firstname) != base64url.decode(token.payload.sub)
+    }
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opa
+  namespace: projectcontour-auth
+  labels:
+    app: opa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+      name: opa
+    spec:
+      containers:
+      - name: opa
+        image: openpolicyagent/opa:latest-envoy
+        ports:
+        - name: http
+          containerPort: 8181
+        - name: grpc
+          containerPort: 9191
+        args:
+        - "run"
+        - "--ignore=.*"  #! exclude hidden dirs created by Kubernetes
+        - "--log-level"
+        - "debug"
+        - "--log-format"
+        - "text"
+        - "--server"
+        - "--addr=:8181"
+        - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
+        - "--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow"
+        - "--set=decision_logs.console=true"
+        - "--h2c"
+        - "/policies"
+        volumeMounts:
+        - readOnly: true
+          mountPath: /policies
+          name: proxy-config
+      volumes:
+        - name: proxy-config
+          configMap:
+            name: opa-policy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opa
+  namespace: projectcontour-auth
+  labels:
+    app: opa
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8181
+    targetPort: 8181
+    protocol: TCP
+    name: http
+  - port: 9191
+    targetPort: 9191
+    protocol: TCP
+    name: grpc
+  selector:
+    app: opa
+---
+apiVersion: projectcontour.io/v1alpha1
+kind: ExtensionService
+metadata:
+  name: opa
+  namespace: projectcontour-auth
+spec:
+  protocol: h2c
+  services:
+  - name: opa
+    port: 9191
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-conformance-echo
+  namespace: projectcontour-roots
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-conformance-echo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-conformance-echo
+    spec:
+      containers:
+      - name: conformance-echo
+        image: k8s.gcr.io/ingressconformance/echoserver:v0.0.1@sha256:9b34b17f391f87fb2155f01da2f2f90b7a4a5c1110ed84cb5379faa4f570dc52
+        ports:
+        - name: http-api
+          containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-conformance-echo
+  namespace: projectcontour-roots
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http-api
+  selector:
+    app.kubernetes.io/name: ingress-conformance-echo
+# ---
+# apiVersion: projectcontour.io/v1
+# kind: HTTPProxy
+# metadata:
+#   name: echo
+#   namespace: apps
+# spec:
+#   virtualhost:
+#     fqdn: echo.apps.tanzuplatform.com
+#     tls:
+#       secretName: apps.tanzuplatform.com
+#     authorization:
+#       extensionRef:
+#         name: opa
+#         namespace: apps
+#   routes:
+#   - services:
+#     - name: ingress-conformance-echo
+#       port: 80
+---
+apiVersion: cert-manager.io/v1alpha3
+kind: Certificate
+metadata:
+  name: opacert
+  namespace: projectcontour-auth
+spec:
+  dnsNames:
+  - opa
+  secretName: opacert
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer

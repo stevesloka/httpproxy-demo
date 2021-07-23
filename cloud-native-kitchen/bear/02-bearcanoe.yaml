@@ -1,0 +1,47 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: root
+  namespace: bearcanoe-root
+spec:
+  virtualhost:
+    fqdn: bearcanoe.com
+    tls:
+      secretName: bearcanoe-tls
+  includes:
+  - name: blogsite
+    namespace: marketing
+    conditions:
+    - prefix: /blog
+  routes:
+  - conditions:
+    - prefix: /
+    services:
+    - name: rootapp
+      port: 80
+      weight: 0
+    - name: rootapp
+      port: 80
+      weight: 70
+      requestHeadersPolicy:
+        set:
+        - name: iscanary
+          value: "true"
+
+
+
+
+
+  # includes:
+  # - name: blogsite
+  #   namespace: marketing
+  #   conditions:
+  #   - prefix: /blog
+
+    # - name: rootapp
+    #   port: 80
+    #   weight: 8
+    #   requestHeadersPolicy:
+    #     set:
+    #     - name: iscanary
+    #       value: "true"
