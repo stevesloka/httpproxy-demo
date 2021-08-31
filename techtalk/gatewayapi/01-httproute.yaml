@@ -17,3 +17,4 @@ spec:
       - serviceName: rootapp
         port: 80
     
+    

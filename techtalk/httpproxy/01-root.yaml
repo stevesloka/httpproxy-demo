@@ -6,12 +6,17 @@ metadata:
 spec:
   virtualhost:
     fqdn: local.projectcontour.io
+  includes:
+  - name: blogsite
+    namespace: marketing
+    conditions:
+    - prefix: /blog
   routes:
   - services:
     - name: rootapp
       port: 80
-    conditions:
-    - prefix: /
+
+
 
 
 

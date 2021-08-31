@@ -15,9 +15,16 @@ spec:
             name: rootapp
             port:
               number: 80
+      - path: /secure
+        pathType: Prefix
+        backend:
+          service:
+            name: secureapp
+            port:
+              number: 80
 
 
-
+ 
 
 
 
